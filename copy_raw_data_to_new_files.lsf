@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# LSF script to launch bedops to select peaks common to all 5 peduncle samples
+#
+#BSUB -q NBI-Prod128
+#BSUB -J copy_name_data
+#BSUB -R "rusage[mem=10000]"
+
+
+cd /nbi/group-data/ifs/NBI/Research-Groups/Cristobal-Uauy/PB_AFLF/control_timecourse/raw_data/PKG_ENQ-789_60_samples_data_transfer
+
+cd Sample_1443_LIB17067_LDI14180
+cat 1443_LIB17067_LDI14180_CGATGT_L008_R1.fastq.gz > ../../../fastq_with_names/FLB10_WT_7_R1.fastq.gz
+cat 1443_LIB17067_LDI14180_CGATGT_L008_R2.fastq.gz > ../../../fastq_with_names/FLB10_WT_7_R2.fastq.gz
+

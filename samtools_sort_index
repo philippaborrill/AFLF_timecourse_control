@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+# LSF script to launch bedops to select peaks common to all 5 peduncle samples
+#
+#BSUB -q NBI-Prod128
+#BSUB -J samtools_FLB26_WT_7_v2
+#BSUB -R "rusage[mem=10000]"
+
+cd /nbi/group-data/ifs/NBI/Research-Groups/Cristobal-Uauy/PB_AFLF/control_timecourse/kallisto_analysis
+
+source samtools-0.1.19
+samtools sort FLB26_WT_7.bam FLB26_WT_7.sorted2
+samtools index FLB26_WT_7.sorted2.bam FLB26_WT_7.sorted2.bai

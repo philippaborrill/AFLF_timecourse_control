@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+# LSF script to launch bedops to select peaks common to all 5 peduncle samples
+#
+#BSUB -q NBI-Prod128
+#BSUB -J copy_name_data
+#BSUB -R "rusage[mem=10000]"
+
+
+cd 

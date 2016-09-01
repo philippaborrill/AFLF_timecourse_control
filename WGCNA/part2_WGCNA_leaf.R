@@ -26,8 +26,9 @@ datExpr0[1:4,1:4]
 # rename datExpr0 to match the tutorial
 datExpr <- datExpr0
 rm(datExpr0)
+datExpr[1:4,1:4]
 
-# First determine the soft-thresholding power to use
+## First determine the soft-thresholding power to use ## this is for unsigned network
 
 # Choose a set of soft-thresholding powers
 powers = c(c(1:10), seq(from = 12, to=20, by=2))
@@ -36,7 +37,7 @@ sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
 
 # Plot the results:
 sizeGrWindow(9, 5)
-pdf(file="soft-threshold_power.pdf")
+pdf(file="soft-threshold_power_unsigned.pdf")
 par(mfrow = c(1,2));
 cex1 = 0.9;
 # Scale-free topology fit index as a function of the soft-thresholding power
@@ -53,3 +54,234 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
      main = paste("Mean connectivity"))
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 dev.off()
+
+## this shows that I should use 4 as my soft threshold power (4 is the first point at which they cross the 0.9 threshold)
+
+
+# realise I should have run the pickSoftThreshold function with a signed network with bicor correlation therefore re-run
+# Choose a set of soft-thresholding powers
+powers = c(c(1:10), seq(from = 12, to=20, by=2))
+# run soft-thresholding
+sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5, networkType ="signed hybrid", 
+                        corFnc ="bicor", corOptions=list(maxPOutliers=0.1))
+
+
+# Plot the results:
+sizeGrWindow(9, 5)
+pdf(file="soft-threshold_power_signed_hybrid.pdf")
+par(mfrow = c(1,2));
+cex1 = 0.9;
+# Scale-free topology fit index as a function of the soft-thresholding power
+plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit,signed R^2",type="n",
+     main = paste("Scale independence"));
+text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     labels=powers,cex=cex1,col="red");
+# this line corresponds to using an R^2 cut-off of h
+abline(h=0.90,col="red")
+# Mean connectivity as a function of the soft-thresholding power
+plot(sft$fitIndices[,1], sft$fitIndices[,5],
+     xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
+     main = paste("Mean connectivity"))
+text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
+dev.off()
+
+# This shows that for a signed hybrid network I should use a power of 16. 
+
+sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5, networkType ="signed hybrid", 
+                        corFnc ="bicor", corOptions = "use = 'p', maxPOutliers = 0.1" )
+##Run the model
+
+bwnet = blockwiseModules(datExpr, maxBlockSize = 10000,
+                         power = 16, networkType = "signed hybrid", TOMType = "unsigned", minModuleSize = 30,
+                         corType="bicor", corOptions = "use = 'p', maxPOutliers = 0.1",
+                         reassignThreshold = 0, mergeCutHeight = 0.25,
+                         numericLabels = TRUE,
+                         saveTOMs = TRUE,
+                         saveTOMFileBase = "Leaf_power16_signed_hybrid_TOM-blockwise",
+                         verbose = 3)
+
+# Examine module membership
+
+# First let's see what the bwnet dataset contains
+names(bwnet)
+length(table(bwnet$blocks))
+
+# get the modules colours
+bwnetModuleColors <- labels2colors(bwnet$colors)
+
+#get the module labels
+bwnetModuleLabels <- bwnet$colors
+
+# look at how many genes per module
+table(bwnetModuleLabels)
+write.csv(table(bwnetModuleLabels), file="bwnet_modules_mergeCutHeight_0.25.csv")
+
+# plot histogram of module sizes
+jpeg(file="Number of genes in module mergeCutHeight_0.25.jpg")
+par(mfrow=c(1,2))
+hist(table(bwnetModuleLabels), xlim=c(1,10000), breaks=1000, xlab="Number of genes in Module", main="mergeCutHeight_0.25")
+hist(table(bwnetModuleLabels), xlim=c(1,1000), breaks=1000, xlab="Number of genes in Module", main="Zoomed in mergeCutHeight_0.25")
+
+dev.off()
+
+# plot dendrograms of module membership
+
+# as 1 pdf (10 pages)
+pdf(file="dendrogram_of_module_membership_0.25_mergeCutHeight.pdf", width=6, height=4)
+par(mfrow = c(5,2))
+for (i in 1:10)  {        # there are 10 blocks
+plotDendroAndColors(bwnet$dendrograms[[i]], bwnetModuleColors[bwnet$blockGenes[[i]]],
+                    "Module colors", main = paste0("Gene dendrogram and module colors in block ",i),
+                    dendroLabels = FALSE, hang = 0.03,
+                    addGuide = TRUE, guideHang = 0.05)
+}
+dev.off()
+
+
+# as 10 jpgs
+for (i in 1:10)  {        # there are 10 blocks
+  jpeg(file=paste0("dendrogram_of_module_membership_0.25_mergeCutHeight_block_",i,".jpeg"))
+  plotDendroAndColors(bwnet$dendrograms[[i]], bwnetModuleColors[bwnet$blockGenes[[i]]],
+                      "Module colors", main = paste0("Gene dendrogram and module colors in block ",i),
+                      dendroLabels = FALSE, hang = 0.03,
+                      addGuide = TRUE, guideHang = 0.05)
+  dev.off()
+}
+
+# let's save this data
+save(bwnet, file="bwnet_network_mergeCutHeight0.25.RData")
+
+
+# also save the components separately (as the manual suggests)
+bwnetMEs <- bwnet$MEs
+bwnetdendrograms <- bwnet$dendrograms
+
+save(bwnetModuleColors, bwnetModuleLabels, bwnetMEs, bwnetdendrograms, file = "bwnet_network_components_mergeCutHeight0.25.RData")
+
+
+# check we can load the data
+bwnet_test <- load(file="bwnet_network_mergeCutHeight0.25.RData")
+bwnet_test
+
+
+# looks like my cutoff for module membership was way too low so many genes remain unassigned 
+# (in fact the mergeCutHeight is subtracted from 1 so I put 0.25 so modules with cut height 0.75 would be merged together)
+# to get more modules need to reduce the merge cut height e.g. to 0.1
+
+
+bwnet2 <- recutBlockwiseTrees(datExpr, goodSamples=bwnet$goodSamples, goodGenes =bwnet$goodGenes,
+                    blocks = bwnet$blocks, TOMFiles = bwnet$TOMFiles, dendrograms = bwnet$dendrograms,
+                    corType = "bicor", corOptions = "use = 'p', maxPOutliers = 0.1", networkType = "signed hybrid",
+                    minModuleSize = 30, reassignThreshold = 0, 
+                    mergeCutHeight = 0.20, # have changed this from 0.25 to 0.1 
+                    numericLabels = TRUE,
+                    verbose = 3)
+                    
+# First let's see what the bwnet dataset contains
+names(bwnet2)
+
+# get the modules colours
+bwnet2ModuleColors <- labels2colors(bwnet2$colors)
+
+#get the module labels
+bwnet2ModuleLabels <- bwnet2$colors
+
+# look at how many genes per module
+table(bwnet2ModuleLabels)
+write.csv(table(bwnet2ModuleLabels), file="bwnet2_modules_mergeCutHeight_0.20.csv")
+
+# plot histogram of module sizes
+jpeg(file="Number of genes in module mergeCutHeight_0.20.jpg")
+par(mfrow=c(1,2))
+hist(table(bwnet2ModuleLabels), xlim=c(1,10000), breaks=1000, xlab="Number of genes in Module", main="mergeCutHeight_0.20")
+hist(table(bwnet2ModuleLabels), xlim=c(1,1000), breaks=1000, xlab="Number of genes in Module", main="Zoomed in mergeCutHeight_0.20")
+
+dev.off()
+
+# plot dendrograms of module membership
+
+# as 1 pdf (10 pages)
+pdf(file="dendrogram_of_module_membership_0.20_mergeCutHeight.pdf", width=6, height=4)
+par(mfrow = c(5,2))
+for (i in 1:10)  {        # there are 10 blocks
+  plotDendroAndColors(bwnet$dendrograms[[i]], bwnet2ModuleColors[bwnet$blockGenes[[i]]],
+                      "Module colors", main = paste0("Gene dendrogram and module colors in block ",i),
+                      dendroLabels = FALSE, hang = 0.03,
+                      addGuide = TRUE, guideHang = 0.05)
+}
+dev.off()
+
+
+# as 10 jpgs
+for (i in 1:10)  {        # there are 10 blocks
+  jpeg(file=paste0("dendrogram_of_module_membership_0.20_mergeCutHeight_block_",i,".jpeg"))
+  plotDendroAndColors(bwnet$dendrograms[[i]], bwnet2ModuleColors[bwnet$blockGenes[[i]]],
+                      "Module colors", main = paste0("Gene dendrogram and module colors in block ",i),
+                      dendroLabels = FALSE, hang = 0.03,
+                      addGuide = TRUE, guideHang = 0.05)
+  dev.off()
+}                
+
+# now let's save bwnet2 #NB that doesn't include the dendrogram- need that from bwnet original file
+save(bwnet2, file="bwnet2_network_mergeCutHeight0.20.RData")
+names(bwnet2)
+
+# also save the components separately (as the manual suggests)
+bwnetMEs <- bwnet2$MEs
+bwnetdendrograms <- bwnet$dendrograms
+# get the modules colours
+bwnetModuleColors <- labels2colors(bwnet2$colors)
+
+#get the module labels
+bwnetModuleLabels <- bwnet2$colors
+
+# 
+save(bwnetModuleColors, bwnetModuleLabels, bwnetMEs, bwnetdendrograms, file = "bwnet2_network_components_mergeCutHeight0.20.RData")
+
+
+### now want to output genes with module membership
+gene_expr <- cbind(t(datExpr),bwnetModuleLabels, bwnetModuleColors)
+head(gene_expr)
+# what modules are the NAM genes in?
+
+gene_expr["TRIAE_CS42_6AS_TGACv1_486738_AA1564640",]
+gene_expr["TRIAE_CS42_6BS_TGACv1_513229_AA1635270",]
+gene_expr["TRIAE_CS42_6DS_TGACv1_542626_AA1725630",]
+gene_expr["TRIAE_CS42_2AS_TGACv1_113243_AA0353410",]
+gene_expr["TRIAE_CS42_2BS_TGACv1_145996_AA0452240",]
+gene_expr["TRIAE_CS42_2DS_TGACv1_179582_AA0608070",]
+
+# all except 2A are unassigned suggesting they have low variance - plot to take a look
+
+pdf(file="NAM_gene_expression_vsd_transformed.pdf",width=12, height=6)
+par(mfrow=c(2,3))
+
+names_plot <- colnames(gene_expr)[1:30]
+names_plot
+barplot(as.numeric(gene_expr["TRIAE_CS42_6AS_TGACv1_486738_AA1564640",1:30]), main="6A")
+barplot(as.numeric(gene_expr["TRIAE_CS42_6BS_TGACv1_513229_AA1635270",1:30]), main="6B")
+barplot(as.numeric(gene_expr["TRIAE_CS42_6DS_TGACv1_542626_AA1725630",1:30]), main="6D")
+barplot(as.numeric(gene_expr["TRIAE_CS42_2AS_TGACv1_113243_AA0353410",1:30]), main="2A", names.arg = names_plot, las=2)
+barplot(as.numeric(gene_expr["TRIAE_CS42_2BS_TGACv1_145996_AA0452240",1:30]), main="2B", names.arg = names_plot, las=2)
+barplot(as.numeric(gene_expr["TRIAE_CS42_2DS_TGACv1_179582_AA0608070",1:30]), main="2D", names.arg = names_plot, las=2)
+
+dev.off()
+
+
+
+
+
+bwnetMEs
+
+
+datExpr[1:4,"TRIAE_CS42_1AL_TGACv1_000001_AA0000020"]
+
+names(datExpr) <- colnames(datExpr)
+names(datExpr)
+
+dim(datExpr)
+length(bwnetModuleLabels)
+datExpr[(bwnetmoduleColors="brown"),]
+geneModuleMembership = as.data.frame(cor(datExpr, bwnet$MEs, use = "p"));
+head(geneModuleMembership)

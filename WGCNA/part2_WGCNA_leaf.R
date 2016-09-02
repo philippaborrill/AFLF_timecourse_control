@@ -166,7 +166,6 @@ bwnet_test
 
 
 # looks like my cutoff for module membership was way too low so many genes remain unassigned 
-# (in fact the mergeCutHeight is subtracted from 1 so I put 0.25 so modules with cut height 0.75 would be merged together)
 # to get more modules need to reduce the merge cut height e.g. to 0.1
 
 
@@ -174,7 +173,9 @@ bwnet2 <- recutBlockwiseTrees(datExpr, goodSamples=bwnet$goodSamples, goodGenes 
                     blocks = bwnet$blocks, TOMFiles = bwnet$TOMFiles, dendrograms = bwnet$dendrograms,
                     corType = "bicor", corOptions = "use = 'p', maxPOutliers = 0.1", networkType = "signed hybrid",
                     minModuleSize = 30, reassignThreshold = 0, 
-                    mergeCutHeight = 0.20, # have changed this from 0.25 to 0.1 
+                    mergeCutHeight = 0.25, # have changed this from 0.25 to 0.1 
+                    detectCutHeight = 0.9995, # changed from the default of 0.995
+                    deepSplit = 4 , # changed from default of 2
                     numericLabels = TRUE,
                     verbose = 3)
                     
@@ -189,20 +190,24 @@ bwnet2ModuleLabels <- bwnet2$colors
 
 # look at how many genes per module
 table(bwnet2ModuleLabels)
-write.csv(table(bwnet2ModuleLabels), file="bwnet2_modules_mergeCutHeight_0.20.csv")
+write.csv(table(bwnet2ModuleLabels), file="bwnet2_modules_mergeCutHeight_0.2mergeCutHeight_0.25_detectCutHeight_0.9995_deepSplit_4.csv")
 
 # plot histogram of module sizes
-jpeg(file="Number of genes in module mergeCutHeight_0.20.jpg")
+jpeg(file="Number of genes in module mergeCutHeight_0.25_detectCutHeight_0.9995_deepSplit_4.jpg")
 par(mfrow=c(1,2))
-hist(table(bwnet2ModuleLabels), xlim=c(1,10000), breaks=1000, xlab="Number of genes in Module", main="mergeCutHeight_0.20")
-hist(table(bwnet2ModuleLabels), xlim=c(1,1000), breaks=1000, xlab="Number of genes in Module", main="Zoomed in mergeCutHeight_0.20")
+hist(table(bwnet2ModuleLabels), xlim=c(1,10000), breaks=1000, xlab="Number of genes in Module", main="mergeCutHeight_0.25
+     _detectCutHeight_0.9995
+     _deepSplit_4")
+hist(table(bwnet2ModuleLabels), xlim=c(1,1000), breaks=1000, xlab="Number of genes in Module", main="Zoomed in mergeCutHeight_0.25_
+     detectCutHeight_0.9995
+     _deepSplit_4")
 
 dev.off()
 
 # plot dendrograms of module membership
 
 # as 1 pdf (10 pages)
-pdf(file="dendrogram_of_module_membership_0.20_mergeCutHeight.pdf", width=6, height=4)
+pdf(file="dendrogram_of_module_membership_0.25_mergeCutHeight_detectCutHeight_0.9995_deepSplit_4.pdf", width=6, height=4)
 par(mfrow = c(5,2))
 for (i in 1:10)  {        # there are 10 blocks
   plotDendroAndColors(bwnet$dendrograms[[i]], bwnet2ModuleColors[bwnet$blockGenes[[i]]],
@@ -215,7 +220,7 @@ dev.off()
 
 # as 10 jpgs
 for (i in 1:10)  {        # there are 10 blocks
-  jpeg(file=paste0("dendrogram_of_module_membership_0.20_mergeCutHeight_block_",i,".jpeg"))
+  jpeg(file=paste0("dendrogram_of_module_membership_0.25_mergeCutHeight_detectCutHeight_0.9995_deepSplit_4_block_",i,".jpeg"))
   plotDendroAndColors(bwnet$dendrograms[[i]], bwnet2ModuleColors[bwnet$blockGenes[[i]]],
                       "Module colors", main = paste0("Gene dendrogram and module colors in block ",i),
                       dendroLabels = FALSE, hang = 0.03,
@@ -224,7 +229,7 @@ for (i in 1:10)  {        # there are 10 blocks
 }                
 
 # now let's save bwnet2 #NB that doesn't include the dendrogram- need that from bwnet original file
-save(bwnet2, file="bwnet2_network_mergeCutHeight0.20.RData")
+save(bwnet2, file="bwnet2_network_mergeCutHeight0.25_detectCutHeight_0.9995_deepSplit_4.RData")
 names(bwnet2)
 
 # also save the components separately (as the manual suggests)
@@ -237,26 +242,31 @@ bwnetModuleColors <- labels2colors(bwnet2$colors)
 bwnetModuleLabels <- bwnet2$colors
 
 # 
-save(bwnetModuleColors, bwnetModuleLabels, bwnetMEs, bwnetdendrograms, file = "bwnet2_network_components_mergeCutHeight0.20.RData")
+save(bwnetModuleColors, bwnetModuleLabels, bwnetMEs, bwnetdendrograms, file = 
+       "bwnet2_network_components_mergeCutHeight0.25_detectCutHeight_0.9995_deepSplit_4.RData")
 
 
 ### now want to output genes with module membership
 gene_expr <- cbind(t(datExpr),bwnetModuleLabels, bwnetModuleColors)
 head(gene_expr)
+
+# write genes with modules to file
+write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.25_detectCutHeight_0.9995_deepSplit_4.csv")
+
 # what modules are the NAM genes in?
 
-gene_expr["TRIAE_CS42_6AS_TGACv1_486738_AA1564640",]
-gene_expr["TRIAE_CS42_6BS_TGACv1_513229_AA1635270",]
-gene_expr["TRIAE_CS42_6DS_TGACv1_542626_AA1725630",]
-gene_expr["TRIAE_CS42_2AS_TGACv1_113243_AA0353410",]
-gene_expr["TRIAE_CS42_2BS_TGACv1_145996_AA0452240",]
-gene_expr["TRIAE_CS42_2DS_TGACv1_179582_AA0608070",]
+gene_expr["TRIAE_CS42_6AS_TGACv1_486738_AA1564640",31:32]
+gene_expr["TRIAE_CS42_6BS_TGACv1_513229_AA1635270",31:32]
+gene_expr["TRIAE_CS42_6DS_TGACv1_542626_AA1725630",31:32]
+gene_expr["TRIAE_CS42_2AS_TGACv1_113243_AA0353410",31:32]
+gene_expr["TRIAE_CS42_2BS_TGACv1_145996_AA0452240",31:32]
+gene_expr["TRIAE_CS42_2DS_TGACv1_179582_AA0608070",31:32]
 
 # all except 2A are unassigned suggesting they have low variance - plot to take a look
 
 pdf(file="NAM_gene_expression_vsd_transformed.pdf",width=12, height=6)
 par(mfrow=c(2,3))
-
+par(oma=c(2,1,1,1))
 names_plot <- colnames(gene_expr)[1:30]
 names_plot
 barplot(as.numeric(gene_expr["TRIAE_CS42_6AS_TGACv1_486738_AA1564640",1:30]), main="6A")
@@ -268,20 +278,3 @@ barplot(as.numeric(gene_expr["TRIAE_CS42_2DS_TGACv1_179582_AA0608070",1:30]), ma
 
 dev.off()
 
-
-
-
-
-bwnetMEs
-
-
-datExpr[1:4,"TRIAE_CS42_1AL_TGACv1_000001_AA0000020"]
-
-names(datExpr) <- colnames(datExpr)
-names(datExpr)
-
-dim(datExpr)
-length(bwnetModuleLabels)
-datExpr[(bwnetmoduleColors="brown"),]
-geneModuleMembership = as.data.frame(cor(datExpr, bwnet$MEs, use = "p"));
-head(geneModuleMembership)

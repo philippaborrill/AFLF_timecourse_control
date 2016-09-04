@@ -222,7 +222,9 @@ gene_expr <- cbind(t(datExpr),bwnetModuleLabels, bwnetModuleColors)
 head(gene_expr)
 
 # write genes with modules to file
-write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.25_detectCutHeight_0.9995_deepSplit_4.csv")
+write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.25.csv")
+
+#write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.25_detectCutHeight_0.9995_deepSplit_4.csv")
 
 # what modules are the NAM genes in?
 

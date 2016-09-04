@@ -12,10 +12,14 @@
 # I guess I could run it on the cluster if I wanted
 
 # setup R correctly
+# if in cluster
 setwd("Y:\\PB_AFLF\\control_timecourse\\TGAC_kallisto_analysis\\kallisto_results_bootstrap\\results\\2_Leaf_WGCNA\\2_tpm_1_timepoint")
+# if on laptop
+setwd("C:\\Users\\borrillp\\Documents\\AFLF_control_timecourse\\2_tpm_1_timepoint\\")
 library(WGCNA)
 options(stringsAsFactors = FALSE)
 
+##########network analysis itself ##########
 #load data from the 1st part of the analysis
 lnames=load(file="filtered_leaf_data_ready_for_WGCNA_2tpm.RData")
 # lnames contains the names of loaded variables
@@ -130,7 +134,7 @@ bwnetdendrograms <- bwnet$dendrograms
 
 save(bwnetModuleColors, bwnetModuleLabels, bwnetMEs, bwnetdendrograms, file = "bwnet_network_components_mergeCutHeight0.25.RData")
 
-
+######playing with clustering settings ########
 # check we can load the data
 bwnet_test <- load(file="bwnet_network_mergeCutHeight0.25.RData")
 bwnet_test
@@ -139,6 +143,14 @@ bwnet_test
 # looks like my cutoff for module membership was way too low so many genes remain unassigned 
 # to get more modules need to reduce the merge cut height e.g. to 0.1
 
+# need to rename TOM files because original calculation was with a different name
+bwnet$TOMFiles
+bwnet$TOMFiles2 <- as.vector(c("Leaf_power9_signed_hybrid_TOM-blockwise-block.1.RData",
+                               "Leaf_power9_signed_hybrid_TOM-blockwise-block.2.RData",
+                               "Leaf_power9_signed_hybrid_TOM-blockwise-block.3.RData",
+                               "Leaf_power9_signed_hybrid_TOM-blockwise-block.4.RData",
+                               "Leaf_power9_signed_hybrid_TOM-blockwise-block.5.RData"))
+bwnet$TOMFiles <- bwnet$TOMFiles2
 
 bwnet2 <- recutBlockwiseTrees(datExpr, goodSamples=bwnet$goodSamples, goodGenes =bwnet$goodGenes,
                     blocks = bwnet$blocks, TOMFiles = bwnet$TOMFiles, dendrograms = bwnet$dendrograms,
@@ -223,6 +235,8 @@ head(gene_expr)
 
 # write genes with modules to file
 write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.25_detectCutHeight_0.9995_deepSplit_4.csv")
+write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.25.csv")
+
 
 # what modules are the NAM genes in?
 

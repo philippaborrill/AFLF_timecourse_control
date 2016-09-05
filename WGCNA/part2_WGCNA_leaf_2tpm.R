@@ -33,6 +33,9 @@ rm(datExpr0)
 datExpr[1:4,1:4]
 dim(datExpr)
 
+# change into new folder to save results
+setwd("C:\\Users\\borrillp\\Documents\\AFLF_control_timecourse\\2_tpm_1_timepoint\\maxP0.09\\")
+
 # realise I should have run the pickSoftThreshold function with a signed network with bicor correlation therefore re-run
 # Choose a set of soft-thresholding powers
 powers = c(c(1:10), seq(from = 12, to=20, by=2))
@@ -68,11 +71,11 @@ power <- 9
 
 bwnet = blockwiseModules(datExpr, maxBlockSize = 10000,
                          power = power, networkType = "signed hybrid", TOMType = "unsigned", minModuleSize = 30,
-                         corType="bicor", corOptions = "use = 'p', maxPOutliers = 0.1",
+                         corType="bicor", corOptions = "use = 'p', maxPOutliers = 0.09", # change to 0.09 so can't exclude a whole timepoint
                          reassignThreshold = 0, mergeCutHeight = 0.25,
                          numericLabels = TRUE,
                          saveTOMs = TRUE,
-                         saveTOMFileBase = "Leaf_power9_signed_hybrid_TOM-blockwise",
+                         saveTOMFileBase = "Leaf_power9_signed_hybrid_TOM-blockwise_maxP0.09",
                          verbose = 3)
 
 # Examine module membership
@@ -136,6 +139,7 @@ save(bwnetModuleColors, bwnetModuleLabels, bwnetMEs, bwnetdendrograms, file = "b
 
 ######playing with clustering settings ########
 # check we can load the data
+setwd("C:\\Users\\borrillp\\Documents\\AFLF_control_timecourse\\2_tpm_1_timepoint\\maxP0.09\\")
 bwnet_test <- load(file="bwnet_network_mergeCutHeight0.25.RData")
 bwnet_test
 

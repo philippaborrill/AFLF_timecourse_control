@@ -16,6 +16,15 @@ biocLite("tximportData")
 biocLite("tximport")
 install.packages("readr")
 
+# install EBSeqHMM
+source("https://bioconductor.org/biocLite.R")
+biocLite("EBSeqHMM")
+
+# install timecourse
+source("https://bioconductor.org/biocLite.R")
+biocLite("timecourse")
+browseVignettes("timecourse")
+
 # install DESeq2
 biocLite("DESeq2")
 

@@ -158,7 +158,7 @@ bwnet$TOMFiles <- bwnet$TOMFiles2
 
 bwnet2 <- recutBlockwiseTrees(datExpr, goodSamples=bwnet$goodSamples, goodGenes =bwnet$goodGenes,
                     blocks = bwnet$blocks, TOMFiles = bwnet$TOMFiles, dendrograms = bwnet$dendrograms,
-                    corType = "bicor", corOptions = "use = 'p', maxPOutliers = 0.1", networkType = "signed hybrid",
+                    corType = "bicor", corOptions = "use = 'p', maxPOutliers = 0.09", networkType = "signed hybrid",
                     minModuleSize = 30, reassignThreshold = 0, 
                     mergeCutHeight = 0.25, # have changed this from 0.25 to 0.1 
                     detectCutHeight = 0.9995, # changed from the default of 0.995
@@ -266,4 +266,154 @@ barplot(as.numeric(gene_expr["TRIAE_CS42_2BS_TGACv1_145996_AA0452240",1:30]), ma
 barplot(as.numeric(gene_expr["TRIAE_CS42_2DS_TGACv1_179582_AA0608070",1:30]), main="2D", names.arg = names_plot, las=2)
 
 dev.off()
+
+# now want to see what transcription factors are in the same modules as the NAM genes
+
+setwd("C:\\Users\\borrillp\\Documents\\AFLF_control_timecourse\\2_tpm_1_timepoint\\maxP0.09\\")
+loaded_modules <- read.csv(file="genes_with_modules_mergeCutHeight0.25.csv")
+head(loaded_modules)
+rownames(loaded_modules) <- loaded_modules$X
+loaded_modules <- loaded_modules[,-1]
+head(loaded_modules)
+dim(loaded_modules)
+
+# add in TF information
+TF_info <- read.csv(file="C:\\Users\\borrillp\\Documents\\AFLF_control_timecourse\\gene_TF_family.csv")
+head(TF_info)
+colnames(TF_info) <- c("gene", "TF_family")
+head(TF_info)
+
+# merge TF info with the module info
+merge_genes <- merge(loaded_modules, TF_info, by.x = 0, by.y = "gene",all.x=TRUE) # keep all genes in loaded_modules
+head(merge_genes)
+dim(merge_genes)
+
+# save modules with TF info (not info about expression)
+merge_genes_sel_col <- merge_genes[,c(1,32:34)]
+head(merge_genes_sel_col)
+write.csv(merge_genes_sel_col,file="genes_with_module_and_TF_info.csv")
+
+# count number of genes in sienna3 module
+length(merge_genes_sel_col$bwnetModuleColors[which(merge_genes_sel_col$bwnetModuleColors=="sienna3")])
+
+# select only genes in module with NAM 6A (and 6D and 2D) (sienna 3)
+NAM_6A <- merge_genes_sel_col[which(merge_genes_sel_col$bwnetModuleColors=="sienna3"),]
+head(NAM_6A)
+dim(NAM_6A)
+
+# select only TFs
+NAM_6A_TF <- NAM_6A[which(NAM_6A$TF_family != "<NA>"),]
+NAM_6A_TF
+dim(NAM_6A_TF)
+write.csv(NAM_6A_TF, file="genes_in_sienna3_module35_which_are_TFs.csv")
+
+
+
+#### now plot expression of TF genes in sienna3 #####
+#### can restart here to load vector of tpms per gene #####
+
+tpmData <- read.csv("C:\\Users\\borrillp\\Documents\\AFLF_control_timecourse\\tpm_summarised_per_gene.csv")
+head(tpmData)
+colnames(tpmData)
+# adjust rownames
+rownames(tpmData) <- tpmData$X
+tpmData <- tpmData[,-1]
+head(tpmData)
+
+# just use FLB data
+tpmData <- tpmData[,1:30]
+head(tpmData)
+
+# add rownames as new column of gene names
+tpmData$target_id <- rownames(tpmData)
+head(tpmData)
+colnames(tpmData)
+tpmF <- tpmData[, c(31, 1:30)]
+rownames(tpmF) <- NULL
+dim(tpmF)
+head(tpmF)
+
+# melt data to long form to use with ggplot
+library(reshape2)
+
+melted_tpmF <- melt(tpmF, id.vars = "target_id", variable.name = "sample")
+head(melted_tpmF)
+tail(melted_tpmF)
+dim(melted_tpmF)
+
+# now want to remove rep info from "sample" column so they can be easily averaged
+melted_tpmF$timepoint <- gsub("_WT_.", "", (melted_tpmF$sample)) # . in the reg expression stands for any character
+head(melted_tpmF)
+tail(melted_tpmF)
+
+# now want to just select certain genes
+# read in list of genes of interest
+genes <- read.csv("genes_in_sienna3_module35_which_are_TFs.csv", header=T)
+genes
+dim(genes)
+
+# select only genes of interest in melted_tpmF
+tpm_to_plot <- subset(melted_tpmF, target_id %in% genes$Row.names)
+head(tpm_to_plot)
+dim(tpm_to_plot)
+
+
+# make summary of data
+
+#### function to summarise data ##########
+summarySE <- function(data=NULL, measurevar, groupvars=NULL, na.rm=FALSE,
+                      conf.interval=.95, .drop=TRUE) {
+  library(plyr)
+  
+  # New version of length which can handle NA's: if na.rm==T, don't count them
+  length2 <- function (x, na.rm=FALSE) {
+    if (na.rm) sum(!is.na(x))
+    else       length(x)
+  }
+  
+  # This does the summary. For each group's data frame, return a vector with
+  # N, mean, and sd
+  datac <- ddply(data, groupvars, .drop=.drop,
+                 .fun = function(xx, col) {
+                   c(N    = length2(xx[[col]], na.rm=na.rm),
+                     mean = mean   (xx[[col]], na.rm=na.rm),
+                     sd   = sd     (xx[[col]], na.rm=na.rm)
+                   )
+                 },
+                 measurevar
+  )
+  
+  # Rename the "mean" column    
+  datac <- rename(datac, c("mean" = measurevar))
+  
+  datac$se <- datac$sd / sqrt(datac$N)  # Calculate standard error of the mean
+  
+  # Confidence interval multiplier for standard error
+  # Calculate t-statistic for confidence interval: 
+  # e.g., if conf.interval is .95, use .975 (above/below), and use df=N-1
+  ciMult <- qt(conf.interval/2 + .5, datac$N-1)
+  datac$ci <- datac$se * ciMult
+  
+  return(datac)
+}
+### summarise my data #######
+
+summarised_tpm <- summarySE(tpm_to_plot, measurevar="value", groupvars=c("target_id","timepoint"))
+
+summarised_tpm
+
+# set name to save plot 
+plot_name <- "modules35_sienna3_TF_gene_expression_in_tpm.pdf"
+
+# make graph
+library(ggplot2)
+pdf(plot_name, height = 6, width=12)
+
+ggplot(summarised_tpm, aes(x=timepoint, y=value, colour=target_id, group =target_id)) +
+  geom_errorbar(aes(ymin=value-se, ymax=value+se), width=0.1) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values=c("pink", "hotpink", "violet", "#666666", "#66CC00", "#33CC66", "purple","#9966FF", "lightblue", "blue", "darkblue"))
+dev.off()
+
 

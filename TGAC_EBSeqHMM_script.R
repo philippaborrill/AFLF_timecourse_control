@@ -20,26 +20,26 @@ setwd("/nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TGAC_k
 count.data<-read.csv(file="counts_summarised_per_gene.csv",header=T)  
 
 head(count.data)
-dim(count.data)
+#dim(count.data)
 
 # make rownames correct
 rownames(count.data) <- count.data[,1]
 counts <- count.data[,-1]
-head(counts)
+#head(counts)
 
 # now select only genes with > 1tpm in at least 1 timepoint FLB
 
 tpmData_FLB <- read.csv(file="tpm_summarised_per_gene.csv", header=T)
-head(tpmData_FLB)
+#head(tpmData_FLB)
 colnames(tpmData_FLB)
 # adjust rownames
 rownames(tpmData_FLB) <- tpmData_FLB$X
 tpmData_FLB <- tpmData_FLB[,-1]
-head(tpmData_FLB)
+#head(tpmData_FLB)
 
 # just use FLB data
 tpmData_FLB <- tpmData_FLB[,1:30]
-head(tpmData_FLB)
+#head(tpmData_FLB)
 
 
 # average per timepoint
@@ -55,13 +55,13 @@ tpmData_FLB$T23 <- (tpmData_FLB[,25] + tpmData_FLB[,26] + tpmData_FLB[,27]) / 3
 tpmData_FLB$T26 <- (tpmData_FLB[,28] + tpmData_FLB[,29] + tpmData_FLB[,30]) / 3
 
 # just keep the average per timepoint
-head(tpmData_FLB)
+#head(tpmData_FLB)
 colnames(tpmData_FLB)[31:40]
 tpmData_FLB_av <- tpmData_FLB[,31:40]
-head(tpmData_FLB_av)
+#head(tpmData_FLB_av)
 
 tpmData_FLB_av$maxtpm <- apply(tpmData_FLB_av[,1:10],1,max)
-head(tpmData_FLB_av)
+#head(tpmData_FLB_av)
 
 # clean up workspace to remove unnecessary dataframes
 rm(tpmData_FLB)
@@ -76,11 +76,11 @@ counts_FLB <- counts_max_FLB[which(counts_max_FLB$maxtpm>1),]
 # make rownames correct
 rownames(counts_FLB) <- counts_FLB[,1]
 counts_FLB <- counts_FLB[,-1]
-head(counts_FLB)
-head(row.names(counts_FLB))
+#head(counts_FLB)
+#head(row.names(counts_FLB))
 # remove tpm and maxtpm columns
 counts_FLB <- counts_FLB[,1:30]
-head(counts_FLB)
+#head(counts_FLB)
 dim(counts_FLB)
 
 #convert to matrix
@@ -95,16 +95,16 @@ FLB_count_matrix <- count_matrix_FLB
 # now select only genes with > 1tpm in at least 1 timepoint G
 
 tpmData_G <- read.csv(file="tpm_summarised_per_gene.csv", header=T)
-head(tpmData_G)
+#head(tpmData_G)
 colnames(tpmData_G)
 # adjust rownames
 rownames(tpmData_G) <- tpmData_G$X
 tpmData_G <- tpmData_G[,-1]
-head(tpmData_G)
+#head(tpmData_G)
 
 # just use G data
 tpmData_G <- tpmData_G[,31:60]
-head(tpmData_G)
+#head(tpmData_G)
 
 
 # average per timepoint
@@ -120,20 +120,20 @@ tpmData_G$T23 <- (tpmData_G[,25] + tpmData_G[,26] + tpmData_G[,27]) / 3
 tpmData_G$T26 <- (tpmData_G[,28] + tpmData_G[,29] + tpmData_G[,30]) / 3
 
 # just keep the average per timepoint
-head(tpmData_G)
+#head(tpmData_G)
 colnames(tpmData_G)[31:40]
 tpmData_G_av <- tpmData_G[,31:40]
-head(tpmData_G_av)
+#head(tpmData_G_av)
 
 tpmData_G_av$maxtpm <- apply(tpmData_G_av[,1:10],1,max)
-head(tpmData_G_av)
+#head(tpmData_G_av)
 
 # clean up workspace to remove unnecessary dataframes
 rm(tpmData_G)
 
 # merge together counts  and tpmData_G_av
 counts_max_G <- merge(counts, tpmData_G_av, by.x = 0, by.y = 0)
-head(counts_max_G)
+#head(counts_max_G)
 dim(counts_max_G)
 # select only rows with a maxtpm >1
 counts_G <- counts_max_G[which(counts_max_G$maxtpm>1),]
@@ -141,8 +141,8 @@ counts_G <- counts_max_G[which(counts_max_G$maxtpm>1),]
 # make rownames correct
 rownames(counts_G) <- counts_G[,1]
 counts_G <- counts_G[,-1]
-head(counts_G)
-head(row.names(counts_G))
+#head(counts_G)
+#head(row.names(counts_G))
 # remove tpm and maxtpm columns
 counts_G <- counts_G[,1:30]
 head(counts_G)
@@ -186,7 +186,7 @@ GeneNormData <- GetNormalizedMat(FLB_count_matrix,Sizes)
 # now use EBSeqHMM to estimate gene expression and the probability that each gene is in a particular expression path (e.g. up-down-down-up)
 # probably want to increase the UpdateRd parameter higher than 5 because will need more iterations
 
-EBSeqHMMGeneOut_FLB <- EBSeqHMMTest(Data=FLB_count_matrix, sizeFactors=Sizes, Conditions=Conditions,UpdateRd=10)
+EBSeqHMMGeneOut_FLB <- EBSeqHMMTest(Data=FLB_count_matrix, sizeFactors=Sizes, Conditions=Conditions, UpdateRd=10)
 # makes such a big file I don't think I would be able to use it!
 saveRDS(EBSeqHMMGeneOut_FLB,"EBSeqHMMGeneOut_FLB.rds")
 

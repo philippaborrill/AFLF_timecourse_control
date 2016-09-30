@@ -21,7 +21,7 @@ allowWGCNAThreads()
 
 ##########network analysis itself ##########
 #load data from the 1st part of the analysis
-lnames=load(file="filtered_leaf_data_ready_for_WGCNA_2tpm_all_conf.RData")
+lnames=load(file="filtered_leaf_data_ready_for_WGCNA_2tpm.RData")
 # lnames contains the names of loaded variables
 lnames
 #check datExpr0 looks ok:

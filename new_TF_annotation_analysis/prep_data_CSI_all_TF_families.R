@@ -125,3 +125,110 @@ colnames(runC) <- c("condition",rep("WT",30))
 
 head(runC)
 write.csv(runC, file="three_batches_runC_for_CSI.csv",row.names = F)
+
+
+###### Extract data for four batch approach: ######
+
+setwd("Y:\\PB_AFLF\\control_timecourse\\TGAC_kallisto_analysis\\kallisto_results_bootstrap\\results\\8_CSI_analysis\\new_annotation_NAC_WRKY_MYB\\all_families")
+
+four_batch_run1 <- read.csv("four_batch_run1.csv", header=F)
+head(four_batch_run1)
+four_batch_run2 <- read.csv("four_batch_run2.csv", header=F)
+head(four_batch_run2)
+four_batch_run3 <- read.csv("four_batch_run3.csv", header=F)
+head(four_batch_run3)
+four_batch_run4 <- read.csv("four_batch_run4.csv", header=F)
+head(four_batch_run4)
+
+# select only genes which are in the TF_network from CSI
+data_TF_in_network <- merge(tpm_data, TF_in_network, by.x = "condition", by.y = "name")
+head(data_TF_in_network)
+colnames(data_TF_in_network)[1:31]
+data_TF_in_network <- data_TF_in_network[,1:31]
+head(data_TF_in_network)
+dim(data_TF_in_network)
+
+# select only genes which are in the TF families selected for two_batch_run1
+colnames(tpm_data)
+
+run1 <- tpm_data[which(tpm_data$family %in% four_batch_run1$V1),1:31]
+head(run1)
+dim(run1)
+
+# add together the NAC,MYB,WKRY data with the run1 data
+run1_complete <- rbind.data.frame(data_TF_in_network, run1)
+head(run1_complete)
+dim(run1_complete)
+
+# add in correct column names
+colnames(run1_complete) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(run1_complete)
+run1_complete <- rbind(colnames(run1_complete), run1_complete)
+colnames(run1_complete) <- c("condition",rep("WT",30))
+head(run1_complete)
+
+# write csv
+write.csv(run1_complete, file="four_batches_run1_for_CSI.csv",row.names = F)
+
+
+# select only genes which are in the TF families selected for four_batch_run2
+run2 <- tpm_data[which(tpm_data$family %in% four_batch_run2$V1),1:31]
+head(run2)
+dim(run2)
+
+# add together the NAC,MYB,WKRY data with the run2 data
+run2_complete <- rbind.data.frame(data_TF_in_network, run2)
+head(run2_complete)
+dim(run2_complete)
+
+# add in correct column names
+colnames(run2_complete) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(run2_complete)
+run2_complete <- rbind(colnames(run2_complete), run2_complete)
+colnames(run2_complete) <- c("condition",rep("WT",30))
+head(run2_complete)
+
+# write csv
+write.csv(run2_complete, file="four_batches_run2_for_CSI.csv",row.names = F)
+
+# select only genes which are in the TF families selected for four_batch_run3
+run3 <- tpm_data[which(tpm_data$family %in% four_batch_run3$V1),1:31]
+head(run3)
+dim(run3)
+
+# add together the NAC,MYB,WKRY data with the run3 data
+run3_complete <- rbind.data.frame(data_TF_in_network, run3)
+head(run3_complete)
+dim(run3_complete)
+
+# add in correct column names
+colnames(run3_complete) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(run3_complete)
+run3_complete <- rbind(colnames(run3_complete), run3_complete)
+colnames(run3_complete) <- c("condition",rep("WT",30))
+head(run3_complete)
+
+# write csv
+write.csv(run3_complete, file="four_batches_run3_for_CSI.csv",row.names = F)
+
+
+# select only genes which are in the TF families selected for four_batch_run4
+run4 <- tpm_data[which(tpm_data$family %in% four_batch_run4$V1),1:31]
+head(run4)
+dim(run4)
+
+# add together the NAC,MYB,WKRY data with the run4 data
+run4_complete <- rbind.data.frame(data_TF_in_network, run4)
+head(run4_complete)
+dim(run4_complete)
+
+# add in correct column names
+colnames(run4_complete) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(run4_complete)
+run4_complete <- rbind(colnames(run4_complete), run4_complete)
+colnames(run4_complete) <- c("condition",rep("WT",30))
+head(run4_complete)
+
+# write csv
+write.csv(run4_complete, file="four_batches_run4_for_CSI.csv",row.names = F)
+

@@ -4,12 +4,12 @@
 
 
 # or set WD for using PC version
-setwd("Y:\\PB_AFLF\\control_timecourse\\GPC_RNAi_Cantu")
+setwd("Y:\\PB_AFLF\\control_timecourse\\GPC_RNAi_Cantu\\per_gene")
 
 library("DESeq2")
 install.packages("DeSeq2")
 
-bckCountTable <- read.table("counts_GPC_RNAi_Cantu.txt", header=TRUE, row.names=1)
+bckCountTable <- read.table("counts_per_gene_GPC_RNAi_Cantu.txt", header=TRUE, row.names=1)
 head(bckCountTable)
 colnames(bckCountTable)
 colnames(bckCountTable) <- c("RNAi_rep1", "RNAi_rep2", "RNAi_rep3","RNAi_rep4","WT_rep1","WT_rep2", "WT_rep3")

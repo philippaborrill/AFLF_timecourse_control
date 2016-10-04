@@ -232,3 +232,54 @@ head(run4_complete)
 # write csv
 write.csv(run4_complete, file="four_batches_run4_for_CSI.csv",row.names = F)
 
+
+###### now make supernetwork input files for CSI #####
+setwd("Y:\\PB_AFLF\\control_timecourse\\TGAC_kallisto_analysis\\kallisto_results_bootstrap\\results\\8_CSI_analysis\\new_annotation_NAC_WRKY_MYB\\all_families")
+
+supernetwork1 <- read.csv("supernetwork1_all_genes_run1_to_run4_threshold_0.013.csv", header=T)
+head(supernetwork1)
+dim(supernetwork1)
+
+# select only genes which are in the list from CSI (all genes run 1 to run 4)
+data_TF_in_network <- merge(tpm_data, supernetwork1, by.x = "condition", by.y = "genes")
+head(data_TF_in_network)
+colnames(data_TF_in_network)[1:31]
+data_TF_in_network <- data_TF_in_network[,1:31]
+head(data_TF_in_network)
+dim(data_TF_in_network)
+
+# add in correct column names
+colnames(data_TF_in_network) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(data_TF_in_network)
+data_TF_in_network <- rbind(colnames(data_TF_in_network), data_TF_in_network)
+colnames(data_TF_in_network) <- c("condition",rep("WT",30))
+head(data_TF_in_network)
+
+# write csv
+write.csv(data_TF_in_network, file="supernetwork1_for_CSI.csv",row.names = F)
+
+
+## do it for supernetwork2
+
+supernetwork2 <- read.csv("supernetwork2_all_genes_run1_to_run4_threshold_0.013_2_degrees.csv", header=T)
+head(supernetwork2)
+dim(supernetwork2)
+
+# select only genes which are in the list from CSI (all genes run 1 to run 4)
+data_TF_in_network <- merge(tpm_data, supernetwork2, by.x = "condition", by.y = "genes")
+head(data_TF_in_network)
+colnames(data_TF_in_network)[1:31]
+data_TF_in_network <- data_TF_in_network[,1:31]
+head(data_TF_in_network)
+dim(data_TF_in_network)
+
+# add in correct column names
+colnames(data_TF_in_network) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(data_TF_in_network)
+data_TF_in_network <- rbind(colnames(data_TF_in_network), data_TF_in_network)
+colnames(data_TF_in_network) <- c("condition",rep("WT",30))
+head(data_TF_in_network)
+
+# write csv
+write.csv(data_TF_in_network, file="supernetwork2_for_CSI.csv",row.names = F)
+

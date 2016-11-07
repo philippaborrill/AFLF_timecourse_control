@@ -423,3 +423,74 @@ head(logcountData_NAC_WRKY_MYB)
 write.csv(logcountData_NAC_WRKY_MYB, file=paste0("countData_diff_expr_TF_",tpm,"tpm_high_conf_NAC_WRKY_MYB_for_CSI.csv"))
 
 }
+
+
+# now make file separately for NAC, for WRKY, for MYB at 10 tpm and run to check it doesn't drastically change the network by having 1 family alone
+# read in TF family info
+TF_info <-  read.csv(file="Y:\\PB_AFLF\\control_timecourse\\TF_analysis\\triticum_aestivum_TFs_final_high_conf.csv", header=TRUE)
+
+
+setwd("Y:\\PB_AFLF\\control_timecourse\\TGAC_kallisto_analysis\\kallisto_results_bootstrap\\results\\9_EBSeqHMM_TF_only_new_annotation\\")
+
+count_data_NAC_MYB_WRKY <- read.csv("countData_diff_expr_TF_10tpm_high_conf_NAC_WRKY_MYB_for_CSI.csv", header=T)
+head(TF_info)
+head(count_data_NAC_MYB_WRKY)
+dim(count_data_NAC_MYB_WRKY)
+
+count_data_with_family <- merge(count_data_NAC_MYB_WRKY,TF_info, by.x = "condition", by.y = "gene")
+head(count_data_with_family)
+dim(count_data_with_family)
+
+# extract just NAC
+count_data_NAC <- count_data_with_family[which(count_data_with_family$family == "NAC"),]
+dim(count_data_NAC)
+head(count_data_NAC)
+count_data_NAC <- count_data_NAC[,1:31]
+
+# add in correct nomeclature to columns
+colnames(count_data_NAC) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(count_data_NAC)
+
+count_data_NAC <- rbind(colnames(count_data_NAC), count_data_NAC)
+head(count_data_NAC)
+dim(count_data_NAC)
+colnames(count_data_NAC) <- c("condition",rep("WT",30))
+head(count_data_NAC)
+
+write.csv(count_data_NAC, file="countData_diff_expr_NAC_10tpm_high_conf_for_CSI.csv", row.names = F)
+
+# extract just MYB
+count_data_MYB <- count_data_with_family[which(count_data_with_family$family == "MYB"),]
+dim(count_data_MYB)
+head(count_data_MYB)
+count_data_MYB <- count_data_MYB[,1:31]
+
+# add in correct nomeclature to columns
+colnames(count_data_MYB) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(count_data_MYB)
+
+count_data_MYB <- rbind(colnames(count_data_MYB), count_data_MYB)
+head(count_data_MYB)
+dim(count_data_MYB)
+colnames(count_data_MYB) <- c("condition",rep("WT",30))
+head(count_data_MYB)
+
+write.csv(count_data_MYB, file="countData_diff_expr_MYB_10tpm_high_conf_for_CSI.csv", row.names = F)
+
+# extract just WRKY
+count_data_WRKY <- count_data_with_family[which(count_data_with_family$family == "WRKY"),]
+dim(count_data_WRKY)
+head(count_data_WRKY)
+count_data_WRKY <- count_data_WRKY[,1:31]
+
+# add in correct nomeclature to columns
+colnames(count_data_WRKY) <- c("time",rep(c("3", "7", "10", "13", "15", "17", "19", "21", "23", "26"),each=3))
+head(count_data_WRKY)
+
+count_data_WRKY <- rbind(colnames(count_data_WRKY), count_data_WRKY)
+head(count_data_WRKY)
+dim(count_data_WRKY)
+colnames(count_data_WRKY) <- c("condition",rep("WT",30))
+head(count_data_WRKY)
+
+write.csv(count_data_WRKY, file="countData_diff_expr_WRKY_10tpm_high_conf_for_CSI.csv", row.names = F)

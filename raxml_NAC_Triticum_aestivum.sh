@@ -19,4 +19,4 @@ cd /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysi
 source raxml-8.1.2.x
 
 
-raxmlHPC -s Triticum_aestivum_NACs_msa.fa -n Triticum_aestivum_NACs_msa_tree -m PROTGAMMAAUTO -f a -x 100 -N 100 -p 100
+raxmlHPC -s cleaned_NAC_aln70_removed_empty_shortID.phy -n Triticum_aestivum_NACs_msa_tree -m PROTGAMMAAUTO -f a -x 100 -N 100 -p 100

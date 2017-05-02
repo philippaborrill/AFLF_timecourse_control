@@ -126,6 +126,6 @@ wheat_NAC_aln <- read.alignment(file = "wheat_NAC_msa_NAC_domain_no_numbers_shor
 wheat_NAC_aln$seq
 
 cleaned_wheat_NAC_aln10 <- cleanAlignment(wheat_NAC_aln, 10, 0)
-write.fasta(cleaned_wheat_NAC_aln10$seq, cleaned_wheat_NAC_aln10$nam, "wheat_NAC_msa_NAC_domain_no_numbers_10perc.fa", open="w" )
+write.fasta(cleaned_wheat_NAC_aln10$seq, cleaned_wheat_NAC_aln10$nam, "wheat_NAC_msa_NAC_domain_no_numbers_10perc_shortID.fa", open="w" )
 
 

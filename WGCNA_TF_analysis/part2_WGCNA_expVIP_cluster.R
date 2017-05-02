@@ -37,13 +37,13 @@ dim(datExpr)
 setwd("/nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/WGCNA/maxP0.05")
 
 
-# This shows that for a signed hybrid network I should use a power of 5. 
-power <- 5
+# This shows that for a signed hybrid network I should use a power of 6. 
+power <- 6
 
 
 ##Run the model
-# try maxBlockSize 20,000 rather than 10,000
-bwnet = blockwiseModules(datExpr, maxBlockSize = 20000, 
+# try maxBlockSize 46,000 rather than 10,000
+bwnet = blockwiseModules(datExpr, maxBlockSize = 46000, 
                          power = power, networkType = "signed hybrid", TOMType = "unsigned", minModuleSize = 30,
                          corType="bicor", corOptions = "use = 'p', maxPOutliers = 0.05", 
                          reassignThreshold = 0, mergeCutHeight = 0.15,

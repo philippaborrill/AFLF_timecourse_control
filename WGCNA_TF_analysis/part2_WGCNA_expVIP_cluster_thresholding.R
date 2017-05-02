@@ -48,7 +48,7 @@ sft = pickSoftThreshold(datExpr, powerVector = powers, verbose = 5, networkType 
 
 # Plot the results:
 sizeGrWindow(9, 5)
-pdf(file="soft-threshold_power_signed_hybrid_2tpm.pdf")
+pdf(file="soft-threshold_power_signed_hybrid_0.5tpm.pdf")
 par(mfrow = c(1,2));
 cex1 = 0.9;
 # Scale-free topology fit index as a function of the soft-thresholding power

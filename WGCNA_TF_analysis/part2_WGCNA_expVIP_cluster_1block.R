@@ -34,7 +34,7 @@ datExpr[1:4,1:4]
 dim(datExpr)
 
 # change into new folder to save results
-setwd("/nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/WGCNA/maxP0.05")
+setwd("/nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/WGCNA/maxP0.05_1block")
 
 
 # This shows that for a signed hybrid network I should use a power of 5. 
@@ -42,8 +42,8 @@ power <- 5
 
 
 ##Run the model
-# try maxBlockSize 20,000 rather than 10,000
-bwnet = blockwiseModules(datExpr, maxBlockSize = 20000, 
+# try maxBlockSize 120,000 rather than 10,000 i.e. 3 sets of probes together
+bwnet = blockwiseModules(datExpr, maxBlockSize = 46000, 
                          power = power, networkType = "signed hybrid", TOMType = "unsigned", minModuleSize = 30,
                          corType="bicor", corOptions = "use = 'p', maxPOutliers = 0.05", 
                          reassignThreshold = 0, mergeCutHeight = 0.15,
@@ -110,7 +110,7 @@ write.csv(gene_expr,"genes_with_modules_mergeCutHeight0.15.csv")
 
 ######playing with clustering settings ########
 # check we can load the data
-setwd("/nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/WGCNA/maxP0.05")
+setwd("/nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/WGCNA/maxP0.05_1block")
 
 bwnet_test <- load(file="bwnet_network_mergeCutHeight0.15.RData")
 bwnet_test

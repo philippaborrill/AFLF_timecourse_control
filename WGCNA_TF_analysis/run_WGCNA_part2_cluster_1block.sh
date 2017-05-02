@@ -9,7 +9,7 @@
 #SBATCH -t 7-00:00 # time (D-HH:MM)
 #SBATCH -o /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TGAC_kallisto_analysis/kallisto_results_bootstrap/slurm_output/WGCNA.%N.%j.out # STDOUT
 #SBATCH -e /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TGAC_kallisto_analysis/kallisto_results_bootstrap/slurm_output/WGCNA.%N.%j.err # STDERR
-#SBATCH -J WGCNA
+#SBATCH -J WGCNA_1block
 #SBATCH --mail-type=END,FAIL # notifications for job done & fail
 #SBATCH --mail-user=philippa.borrill@jic.ac.uk # send-to address
 
@@ -18,5 +18,5 @@ cd /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/scripts/WG
 
 source R-3.1.0
 
-Rscript part2_WGCNA_expVIP_cluster.R
+Rscript part2_WGCNA_expVIP_cluster_1block.R
 

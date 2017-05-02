@@ -90,28 +90,30 @@ head(tpm)
 head(row.names(tpm))
 dim(tpm)
 
-tpm$maxtpm <- apply(tpm[,1:308],1,max)
+library(matrixStats)
+
+tpm_filt <- tpm[rowCounts(as.matrix(tpm>tpm_threshold))>=3,] # select only rows which have expr >0.5 tpm in >=3 samples
 head(tpm)
+head(tpm_filt)
+dim(tpm_filt)
+
 
 # clean up workspace to remove unnecessary dataframes
 rm(tpm.data.expVIP)
 
 
-# merge together counts_conf  and tpmData_av
-counts_conf_max <- merge(counts_conf, tpm, by.x = 0, by.y = 0)
+# merge together counts_conf  and tpm_filt # when merging only rows with >0.5 tpm in 3 samples will be kept
+counts_conf_max <- merge(counts_conf, tpm_filt, by.x = 0, by.y = 0)
 head(counts_conf_max)
 dim(counts_conf_max)
-# select only rows with a maxtpm >0.5
-counts <- counts_conf_max[which(counts_conf_max$maxtpm>tpm_threshold),]
-dim(counts)
-head(counts)
+counts <- counts_conf_max
 
 # make rownames correct
 rownames(counts) <- counts[,1]
 counts <- counts[,-1]
 head(counts)
 head(row.names(counts))
-# remove tpm and maxtpm columns
+# remove tpm  columns
 dim(counts)
 colnames(counts[1:308])
 counts <- counts[,1:308]
@@ -121,6 +123,12 @@ head(counts)
 dim(counts)
 
 class(counts)
+
+#clean up workspace
+rm(counts_conf_max)
+rm(counts_conf)
+rm(tpm)
+rm(tpm_filt)
 
 
 source("http://bioconductor.org/biocLite.R")
@@ -214,11 +222,7 @@ metadata_selected$High.level.tissue <- gsub("leaves/shoots", "leavesshoots", met
 
 # convert sampleTree to dendrogram
 
-
-
 dend <- as.dendrogram(sampleTree)
-
-
 
 colorCodes <- c(roots= "brown", leavesshoots = "green", spike = "orange", grain= "purple")
 labels_colors(dend) <- colorCodes[(metadata_selected$High.level.tissue[(order.dendrogram(dend))])]
@@ -236,5 +240,21 @@ plot(dend, main = "Sample clustering to detect outliers", sub="", xlab="", cex.l
 dev.off()
 
 
+# now plot with high level age as colour
+metadata_selected$High.level.age
+colorCodes <- c(seedling = "pale green", vegetative = "green3", reproductive= "olivedrab")
+labels_colors(dend) <- colorCodes[(metadata_selected$High.level.age[(order.dendrogram(dend))])]
+labels_colors(dend)
+head(metadata_selected$High.level.age)
+head(metadata_selected$High.level.age[(order.dendrogram(dend))])
+
+labels_colors(dend)
+
+pdf(file = paste0("Sample_Clustering_coloured_by_age_",tpm_threshold,"tpm.pdf"), width = 40, height = 4)
+par(cex = 0.6);
+par(mar = c(6,4,2,0))
+plot(dend, main = "Sample clustering to detect outliers", sub="", xlab="", cex.lab = 1.5,
+     cex.axis = 1.5, cex.main = 2)
+dev.off()
 
 

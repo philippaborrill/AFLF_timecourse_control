@@ -5,7 +5,7 @@
 #SBATCH -p nbi-medium # partition (queue)
 #SBATCH -N 1 # number of nodes
 #SBATCH -n 1 # number of cores
-#SBATCH --mem 30000 # memory pool for all cores
+#SBATCH --mem 3000 # memory pool for all cores
 #SBATCH -t 2-00:00 # time (D-HH:MM)
 #SBATCH -o /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/slurm_output/shortIDtoLong.%N.%j.out # STDOUT
 #SBATCH -e /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/slurm_output/shortIDtoLong.%N.%j.err # STDERR
@@ -14,9 +14,9 @@
 #SBATCH --mail-user=philippa.borrill\@jic.ac.uk # send-to address
 
 
-cd /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/phylogenetics
+cd /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/phylogenetics/trees/groups_a-h
 
-cat RAxML_bipartitions.wheat_NAC_msa_NAC_domain_no_numbers_10perc_shortID_msa_tree |sed s/0004160.3/TRIAE_CS42_1AL_TGACv1_000129_AA0004160.3/g > tmp1
+cat RAxML_bipartitions.NAC-h_wheat.phy.tree |sed s/0004160.3/TRIAE_CS42_1AL_TGACv1_000129_AA0004160.3/g > tmp1
 cat tmp1 |sed s/0014640.1/TRIAE_CS42_1AL_TGACv1_000555_AA0014640.1/g > tmp2
 cat tmp2 |sed s/0027650.1/TRIAE_CS42_1AL_TGACv1_001239_AA0027650.1/g > tmp3
 cat tmp3 |sed s/0039010.1/TRIAE_CS42_1AL_TGACv1_002139_AA0039010.1/g > tmp4
@@ -682,5 +682,6 @@ cat tmp662 |sed s/C_75795.1/MLOC_75795.1/g > tmp663
 cat tmp663 |sed s/C_7757.1/MLOC_7757.1/g > tmp664
 cat tmp664 |sed s/C_79696.1/MLOC_79696.1/g > tmp665
 cat tmp665 |sed s/C_8116.1/MLOC_8116.1/g > tmp666
-cat tmp666 |sed s/C_81739.1/MLOC_81739.1/g > RAxML_bipartitions.wheat_NAC_msa_NAC_domain_no_numbers_10perc_longID_msa_tree
+cat tmp666 |sed s/C_81739.1/MLOC_81739.1/g > NAC-h_wheat_longID.phy.tree
+
 rm tmp*

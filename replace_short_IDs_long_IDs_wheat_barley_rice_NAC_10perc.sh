@@ -16,7 +16,7 @@
 
 cd /nbi/Research-Groups/NBI/Cristobal-Uauy/PB_AFLF/control_timecourse/TF_analysis/phylogenetics
 
-cat RAxML_bipartitions.wheat_NAC_msa_NAC_domain_no_numbers_10perc_shortID_msa_tree |sed s/0004160.3/TRIAE_CS42_1AL_TGACv1_000129_AA0004160.3/g > tmp1
+cat RAxML_bipartitions.wheat_barley_rice_NAC_domain_10perc_msa_tree |sed s/0004160.3/TRIAE_CS42_1AL_TGACv1_000129_AA0004160.3/g > tmp1
 cat tmp1 |sed s/0014640.1/TRIAE_CS42_1AL_TGACv1_000555_AA0014640.1/g > tmp2
 cat tmp2 |sed s/0027650.1/TRIAE_CS42_1AL_TGACv1_001239_AA0027650.1/g > tmp3
 cat tmp3 |sed s/0039010.1/TRIAE_CS42_1AL_TGACv1_002139_AA0039010.1/g > tmp4
@@ -682,5 +682,5 @@ cat tmp662 |sed s/C_75795.1/MLOC_75795.1/g > tmp663
 cat tmp663 |sed s/C_7757.1/MLOC_7757.1/g > tmp664
 cat tmp664 |sed s/C_79696.1/MLOC_79696.1/g > tmp665
 cat tmp665 |sed s/C_8116.1/MLOC_8116.1/g > tmp666
-cat tmp666 |sed s/C_81739.1/MLOC_81739.1/g > RAxML_bipartitions.wheat_NAC_msa_NAC_domain_no_numbers_10perc_longID_msa_tree
+cat tmp666 |sed s/C_81739.1/MLOC_81739.1/g > RAxML_bipartitions.wheat_barley_rice_NAC_domain_10perc_longID_msa_tree
 rm tmp*
